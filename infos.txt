@@ -12,3 +12,20 @@ email: n8n@n8n.com
 first name: n8n
 last name: n8n
 pass: Abc123@123
+
+
+mongodb -> find date
+{
+  "$expr": {
+      "$gt": ["$createdAt", { "$dateFromString": { "dateString": "2023-05-27" } }]
+  }
+}
+
+mongodb -> aggregate date
+[{
+  "$match": {
+    "$expr": {
+      "$gt": ["$createdAt", { "$dateFromString": { "dateString": "2023-05-27" } }]
+    }
+  }
+}]
