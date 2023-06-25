@@ -25,6 +25,7 @@ services:
       - n8n_mysql
       - n8n_redis
     extra_hosts:
+      - 'dockernet:host-gateway'
       - 'newway:host-gateway'
   n8n_workers:
     build:
@@ -33,12 +34,13 @@ services:
     environment: *n8n_env
     # command: n8n worker --concurrency=${CONCURRENCY:-8}
     deploy:
-      replicas: '${N8N_WORKERS_REPLICAS:-3}'
+      replicas: '${N8N_WORKERS_REPLICAS:-4}'
     depends_on:
       - n8n_mysql
       - n8n_redis
       - n8n
     extra_hosts:
+      - 'dockernet:host-gateway'
       - 'newway:host-gateway'
   n8n_mysql:
     container_name: n8n_mysql
@@ -53,6 +55,7 @@ services:
     volumes:
       - ./data/db/mysql:/var/lib/mysql
     extra_hosts:
+      - 'dockernet:host-gateway'
       - 'newway:host-gateway'
   n8n_redis:
     container_name: n8n_redis
@@ -62,4 +65,5 @@ services:
     volumes:
       - ./data/redis:/data
     extra_hosts:
+      - 'dockernet:host-gateway'
       - 'newway:host-gateway'
