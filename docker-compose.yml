@@ -49,9 +49,9 @@ services:
       - '3307:3306'
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE:-n8n}
-      - MYSQL_USER=${MYSQL_DATABASE:-n8n}
-      - MYSQL_PASSWORD=${MYSQL_DATABASE:-n8n}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n}
+      - MYSQL_USER=${MYSQL_DATABASE:-n8n_user}
+      - MYSQL_PASSWORD=${MYSQL_DATABASE:-n8n_password}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n_password}
     volumes:
       - ./data/db/mysql:/var/lib/mysql
     extra_hosts:
