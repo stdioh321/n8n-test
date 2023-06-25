@@ -13,6 +13,10 @@ git clone https://github.com/stdioh321/n8n-test.git
 ```shell
 cd n8n-test
 ```
+3. Build docker images
+```shell
+docker-compose build --no-cache
+```
 
 ## Run
 Start the services using Docker Compose.
