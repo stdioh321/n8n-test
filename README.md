@@ -24,3 +24,12 @@ Start the services using Docker Compose.
 docker-compose up
 ```
 Once the services are up and running, you can access the n8n web interface by visiting http://localhost:5678 in your web browser.
+
+
+> To start with a clean environment, delete the folder named "./data" that contains the database and Redis data.
+
+The folder ./data comes with a default credetials
+```shell
+user: test@test.com
+pass: Abc123@123
+```
