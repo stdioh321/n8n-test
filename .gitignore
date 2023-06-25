@@ -1,3 +1,5 @@
+data/
+data/**
 data/db/**
 data/redis/**
 docs/credentials/**

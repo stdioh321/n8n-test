@@ -10,12 +10,18 @@ services:
     environment: &n8n_env
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-Gk9a3XvYn#1RtQl$bFcDzO7MpJw2E5sN6H8i4Ux}
       - EXECUTIONS_MODE=${EXECUTIONS_MODE:-queue}
-      - DB_TYPE=${DB_TYPE:-mysqldb}
-      - DB_MYSQLDB_DATABASE=${DB_MYSQLDB_DATABASE:-n8n}
-      - DB_MYSQLDB_HOST=${DB_MYSQLDB_HOST:-n8n_mysql}
-      - DB_MYSQLDB_PORT=${DB_MYSQLDB_PORT:-3306}
-      - DB_MYSQLDB_USER=${DB_MYSQLDB_USER:-n8n_user}
-      - DB_MYSQLDB_PASSWORD=${DB_MYSQLDB_PASSWORD:-n8n_password}
+      # - DB_TYPE=${DB_TYPE:-mysqldb}
+      # - DB_MYSQLDB_DATABASE=${DB_MYSQLDB_DATABASE:-n8n}
+      # - DB_MYSQLDB_HOST=${DB_MYSQLDB_HOST:-n8n_mysql}
+      # - DB_MYSQLDB_PORT=${DB_MYSQLDB_PORT:-3306}
+      # - DB_MYSQLDB_USER=${DB_MYSQLDB_USER:-n8n_user}
+      # - DB_MYSQLDB_PASSWORD=${DB_MYSQLDB_PASSWORD:-n8n_password}
+      - DB_TYPE=${DB_TYPE:-postgresdb}
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-n8n_postgres}
+      - DB_POSTGRESDB_PORT=${DB_POSTGRESDB_PORT:-5432}
+      - DB_POSTGRESDB_USER=${DB_POSTGRESDB_USER:-n8n_user}
+      - DB_POSTGRESDB_PASSWORD=${DB_POSTGRESDB_PASSWORD:-n8n_password}
       - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST:-n8n_redis}
       - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT:-6379}
       - CONCURRENCY=${CONCURRENCY:-12}
@@ -23,7 +29,7 @@ services:
     #   - ./n8n:/root/.n8n
     restart: unless-stopped
     depends_on:
-      - n8n_mysql
+      - n8n_postgres
       - n8n_redis
     extra_hosts:
       - 'dockernet:host-gateway'
@@ -48,18 +54,32 @@ services:
     extra_hosts:
       - 'dockernet:host-gateway'
       - 'newway:host-gateway'
-  n8n_mysql:
-    container_name: n8n_mysql
-    image: mysql:5.7
+  # n8n_mysql:
+  #   container_name: n8n_mysql
+  #   image: mysql:5.7
+  #   ports:
+  #     - '3307:3306'
+  #   environment:
+  #     - MYSQL_DATABASE=${MYSQL_DATABASE:-n8n}
+  #     - MYSQL_USER=${MYSQL_DATABASE:-n8n_user}
+  #     - MYSQL_PASSWORD=${MYSQL_DATABASE:-n8n_password}
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n_password}
+  #   volumes:
+  #     - ./data/db/mysql:/var/lib/mysql
+  #   extra_hosts:
+  #     - 'dockernet:host-gateway'
+  #     - 'newway:host-gateway'
+  n8n_postgres:
+    container_name: n8n_postgres
+    image: postgres:15.3-alpine3.18
     ports:
-      - '3307:3306'
+      - '5433:5432'
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-n8n}
-      - MYSQL_USER=${MYSQL_DATABASE:-n8n_user}
-      - MYSQL_PASSWORD=${MYSQL_DATABASE:-n8n_password}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n_password}
+      - POSTGRES_DB=${POSTGRES_DB:-n8n}
+      - POSTGRES_USER=${POSTGRES_USER:-n8n_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
     volumes:
-      - ./data/db/mysql:/var/lib/mysql
+      - ./data/db/postgres:/var/lib/postgresql/data
     extra_hosts:
       - 'dockernet:host-gateway'
       - 'newway:host-gateway'
