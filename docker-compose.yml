@@ -29,9 +29,9 @@ services:
       - 'newway:host-gateway'
     healthcheck:
       test: curl --fail http://localhost:5678 || exit 1
-      interval: 30s
+      interval: 8s
       timeout: 10s
-      retries: 5
+      retries: 6
   n8n_workers:
     build:
       context: .
