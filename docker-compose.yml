@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  n8n:
+    container_name: n8n
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile.n8n
+    ports:
+      - '5678:5678'
+    environment: &n8n_env
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-Gk9a3XvYn#1RtQl$bFcDzO7MpJw2E5sN6H8i4Ux}
+      - EXECUTIONS_MODE=${EXECUTIONS_MODE:-queue}
+      - DB_TYPE=${DB_TYPE:-mysqldb}
+      - DB_MYSQLDB_DATABASE=${DB_MYSQLDB_DATABASE:-n8n}
+      - DB_MYSQLDB_HOST=${DB_MYSQLDB_HOST:-n8n_mysql}
+      - DB_MYSQLDB_PORT=${DB_MYSQLDB_PORT:-3306}
+      - DB_MYSQLDB_USER=${DB_MYSQLDB_USER:-n8n_user}
+      - DB_MYSQLDB_PASSWORD=${DB_MYSQLDB_PASSWORD:-n8n_password}
+      - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST:-n8n_redis}
+      - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT:-6379}
+      - CONCURRENCY=${CONCURRENCY:-12}
+    # volumes:
+    #   - ./n8n:/root/.n8n
+    depends_on:
+      - n8n_mysql
+      - n8n_redis
+    extra_hosts:
+      - 'newway:host-gateway'
+  n8n_workers:
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile.n8n_worker
+    environment: *n8n_env
+    # command: n8n worker --concurrency=${CONCURRENCY:-8}
+    deploy:
+      replicas: '${N8N_WORKERS_REPLICAS:-3}'
+    depends_on:
+      - n8n_mysql
+      - n8n_redis
+      - n8n
+    extra_hosts:
+      - 'newway:host-gateway'
+  n8n_mysql:
+    container_name: n8n_mysql
+    image: mysql:5.7
+    ports:
+      - '3307:3306'
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-n8n}
+      - MYSQL_USER=${MYSQL_DATABASE:-n8n}
+      - MYSQL_PASSWORD=${MYSQL_DATABASE:-n8n}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n}
+    volumes:
+      - ./data/db/mysql:/var/lib/mysql
+    extra_hosts:
+      - 'newway:host-gateway'
+  n8n_redis:
+    container_name: n8n_redis
+    image: redis:latest
+    ports:
+      - 6380:6379
+    volumes:
+      - ./data/redis:/data
+    extra_hosts:
+      - 'newway:host-gateway'

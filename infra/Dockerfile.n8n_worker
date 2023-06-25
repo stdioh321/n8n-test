@@ -1,0 +1,5 @@
+FROM docker.n8n.io/n8nio/n8n
+ARG CONCURRENCY
+ENV concurrency=CONCURRENCY
+
+CMD n8n worker --concurrency=${CONCURRENCY:-8}
