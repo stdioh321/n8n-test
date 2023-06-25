@@ -21,6 +21,7 @@ services:
       - CONCURRENCY=${CONCURRENCY:-12}
     # volumes:
     #   - ./n8n:/root/.n8n
+    restart: unless-stopped
     depends_on:
       - n8n_mysql
       - n8n_redis
@@ -37,13 +38,13 @@ services:
       context: .
       dockerfile: ./infra/Dockerfile.n8n_worker
     environment: *n8n_env
+    restart: unless-stopped
     # command: n8n worker --concurrency=${CONCURRENCY:-8}
     deploy:
       replicas: '${N8N_WORKERS_REPLICAS:-4}'
     depends_on:
-      - n8n_mysql
-      - n8n_redis
-      - n8n
+      n8n:
+        condition: service_healthy
     extra_hosts:
       - 'dockernet:host-gateway'
       - 'newway:host-gateway'
