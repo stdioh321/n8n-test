@@ -21,7 +21,7 @@ docker-compose build --no-cache
 ## Run
 Start the services using Docker Compose.
 ```shell
-docker-compose up
+bash start.sh
 ```
 Once the services are up and running, you can access the n8n web interface by visiting http://localhost:5678 in your web browser.
 

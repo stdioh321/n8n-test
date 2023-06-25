@@ -8,7 +8,7 @@ services:
     ports:
       - '5678:5678'
     environment: &n8n_env
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-Gk9a3XvYn#1RtQl$bFcDzO7MpJw2E5sN6H8i4Ux}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY:-Gk9a3XvYnGk9a3XvYnGk9a3XvYnGk9a3XvYnGk9a3XvYnGk9a3XvYnGk9a3X}
       - EXECUTIONS_MODE=${EXECUTIONS_MODE:-queue}
       # - DB_TYPE=${DB_TYPE:-mysqldb}
       # - DB_MYSQLDB_DATABASE=${DB_MYSQLDB_DATABASE:-n8n}
