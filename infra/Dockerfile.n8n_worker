@@ -1,5 +1,10 @@
-FROM n8nio/n8n
+FROM n8nio/n8n:0.236.0
 ARG CONCURRENCY
 ENV concurrency=CONCURRENCY
 
-CMD n8n worker --concurrency=${CONCURRENCY:-8}
+RUN apk update
+RUN apk add curl
+
+EXPOSE 5678
+
+CMD n8n worker --concurrency=${CONCURRENCY:-3}

@@ -39,6 +39,11 @@ services:
       interval: 8s
       timeout: 10s
       retries: 6
+    deploy:
+      resources: &n8n_resources
+        limits:
+          memory: 1G
+          cpus: "0.23"
   n8n_workers:
     build:
       context: .
@@ -47,7 +52,8 @@ services:
     restart: unless-stopped
     # command: n8n worker --concurrency=${CONCURRENCY:-8}
     deploy:
-      replicas: '${N8N_WORKERS_REPLICAS:-4}'
+      replicas: '${N8N_WORKERS_REPLICAS:-3}'
+      resources: *n8n_resources
     depends_on:
       n8n:
         condition: service_healthy
