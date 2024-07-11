@@ -1,4 +1,0 @@
-email: test@test.com
-first name: test
-last name: test
-pass: Abc123@123

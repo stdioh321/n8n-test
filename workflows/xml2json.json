@@ -1,0 +1,164 @@
+{
+  "name": "xml2json",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const { xml2json } = require('xml-js');\n\nconst data = $input.all()[0].json.body\nconst xmlString = typeof data.data === 'string' ?  data.data.replace(/\\\\\"/g, '\"') : data.data\n\ntry {\n  return {data: xmlStringToJson(xmlString)};\n} catch (error) {\n    console.log({\n      errorMessage: error.message,\n      stack: error.stack\n    })\n    return {error: error.message};  \n}\n\nfunction xmlStringToJson(xmlString) {\n  return JSON.parse(\n    xml2json(xmlString, { spaces: 1, compact: true }));\n}"
+      },
+      "id": "1ae47b93-20b3-4801-80ae-2a51fca9c987",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($input.item.json) }}",
+        "options": {}
+      },
+      "id": "e5082bd5-b059-4efb-bdac-e15b1f842656",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        440
+      ]
+    },
+    {
+      "parameters": {
+        "path": "xml2json",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a8dee401-3b88-4953-ae32-cb5658671524",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        860,
+        460
+      ],
+      "webhookId": "49ed231d-0300-4ab5-b5c6-6c60dddee9f8"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.error }}"
+            }
+          ]
+        }
+      },
+      "id": "bf222baf-a9d1-4ced-a494-d17136963e3a",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($input.item.json) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "602b6b36-480f-4a12-b841-3923b40c0e4c",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "xml2json",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3ba25325-8f8a-4397-8bfb-ddc5a55fc20c",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        860,
+        600
+      ],
+      "webhookId": "18263eb6-37e4-4526-adce-3c4bf9c922f8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "5ccf3f13-5618-4217-90fc-348b7d6cd6a2",
+  "id": "XEHfq3DBZ0duV9Zj",
+  "meta": {
+    "instanceId": "ce43f8e9d83fa55957f8a418a0867c61676143d6fb4473fe26538c46ef0042bd"
+  },
+  "tags": []
+}

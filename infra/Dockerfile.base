@@ -1,0 +1,16 @@
+FROM n8nio/n8n:1.10.0
+ARG CONCURRENCY
+ENV concurrency=CONCURRENCY
+
+USER root
+RUN apk update
+RUN apk add curl
+
+EXPOSE 5678
+
+RUN npm install lodash moment bcrypt axios faker@5.5.3 zod jsonwebtoken xml2js deasync xml-js -g
+
+# RUN chown node:node /data
+USER node
+
+EXPOSE 5678

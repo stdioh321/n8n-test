@@ -1,10 +1,15 @@
 version: '3.8'
+x-default_extra_hosts: &default_extra_hosts
+  - 'dockernet:host-gateway'
+  - 'newway:host-gateway'
+
+
 services:
   n8n:
     container_name: n8n
     build:
       context: .
-      dockerfile: ./infra/Dockerfile.n8n
+      dockerfile: ./infra/Dockerfile.n8n_main
     ports:
       - '5678:5678'
     environment: &n8n_env
@@ -12,10 +17,10 @@ services:
       - EXECUTIONS_MODE=${EXECUTIONS_MODE:-queue}
       # - DB_TYPE=${DB_TYPE:-mysqldb}
       # - DB_MYSQLDB_DATABASE=${DB_MYSQLDB_DATABASE:-n8n}
-      # - DB_MYSQLDB_HOST=${DB_MYSQLDB_HOST:-n8n_mysql}
+      # - DB_MYSQLDB_HOST=${DB_MYSQLDB_HOST:-newway}
       # - DB_MYSQLDB_PORT=${DB_MYSQLDB_PORT:-3306}
-      # - DB_MYSQLDB_USER=${DB_MYSQLDB_USER:-n8n_user}
-      # - DB_MYSQLDB_PASSWORD=${DB_MYSQLDB_PASSWORD:-n8n_password}
+      # - DB_MYSQLDB_USER=${DB_MYSQLDB_USER:-root}
+      # - DB_MYSQLDB_PASSWORD=${DB_MYSQLDB_PASSWORD:-root}
       - DB_TYPE=${DB_TYPE:-postgresdb}
       - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-n8n}
       - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-n8n_postgres}
@@ -24,16 +29,24 @@ services:
       - DB_POSTGRESDB_PASSWORD=${DB_POSTGRESDB_PASSWORD:-n8n_password}
       - QUEUE_BULL_REDIS_HOST=${QUEUE_BULL_REDIS_HOST:-n8n_redis}
       - QUEUE_BULL_REDIS_PORT=${QUEUE_BULL_REDIS_PORT:-6379}
-      - CONCURRENCY=${CONCURRENCY:-12}
-    # volumes:
-    #   - ./n8n:/root/.n8n
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+      - CONCURRENCY=${CONCURRENCY:-5}
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - QUEUE_HEALTH_CHECK_ACTIVE=true
+      # - EXECUTIONS_DATA_SAVE_ON_ERROR=none
+      # - EXECUTIONS_DATA_SAVE_ON_SUCCESS=none
+      # - EXECUTIONS_DATA_SAVE_ON_PROGRESS=false
+      # - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+      # - N8N_HOST=newway
+      # - N8N_PORT=80
+    volumes:
+      - ./data-temp:/data
     restart: unless-stopped
     depends_on:
       - n8n_postgres
       - n8n_redis
-    extra_hosts:
-      - 'dockernet:host-gateway'
-      - 'newway:host-gateway'
+    extra_hosts: *default_extra_hosts
     healthcheck:
       test: curl --fail http://localhost:5678 || exit 1
       interval: 8s
@@ -51,20 +64,19 @@ services:
     environment: *n8n_env
     restart: unless-stopped
     # command: n8n worker --concurrency=${CONCURRENCY:-8}
+    entrypoint: ""
     deploy:
-      replicas: '${N8N_WORKERS_REPLICAS:-3}'
+      replicas: ${N8N_WORKERS_REPLICAS:-3}
       resources: *n8n_resources
     depends_on:
       n8n:
         condition: service_healthy
-    extra_hosts:
-      - 'dockernet:host-gateway'
-      - 'newway:host-gateway'
+    extra_hosts: *default_extra_hosts
   # n8n_mysql:
   #   container_name: n8n_mysql
   #   image: mysql:5.7
   #   ports:
-  #     - '3307:3306'
+  #     - '3306:3306'
   #   environment:
   #     - MYSQL_DATABASE=${MYSQL_DATABASE:-n8n}
   #     - MYSQL_USER=${MYSQL_DATABASE:-n8n_user}
@@ -72,9 +84,7 @@ services:
   #     - MYSQL_ROOT_PASSWORD=${MYSQL_DATABASE:-n8n_password}
   #   volumes:
   #     - ./data/db/mysql:/var/lib/mysql
-  #   extra_hosts:
-  #     - 'dockernet:host-gateway'
-  #     - 'newway:host-gateway'
+  #   extra_hosts: *default_extra_hosts
   n8n_postgres:
     container_name: n8n_postgres
     image: postgres:15.3-alpine3.18
@@ -86,9 +96,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-n8n_password}
     volumes:
       - ./data/db/postgres:/var/lib/postgresql/data
-    extra_hosts:
-      - 'dockernet:host-gateway'
-      - 'newway:host-gateway'
+    extra_hosts: *default_extra_hosts
   n8n_redis:
     container_name: n8n_redis
     image: redis:latest
@@ -96,6 +104,21 @@ services:
       - 6380:6379
     volumes:
       - ./data/redis:/data
-    extra_hosts:
-      - 'dockernet:host-gateway'
-      - 'newway:host-gateway'
+    extra_hosts: *default_extra_hosts
+  n8n_mongo:
+    container_name: n8n_mongo
+    image: 'mongo:4-xenial'
+    restart: unless-stopped
+    hostname: n8n_mongo
+    volumes:
+      - './data/db/mongo/data:/data'
+      - './data/db/mongo/db:/data/db'
+    ports:
+      - '27020:27017'
+    extra_hosts: *default_extra_hosts
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+        reservations:
+          memory: 1048M
