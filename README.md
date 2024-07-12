@@ -7,11 +7,11 @@ Certifique-se de ter o Docker e o Docker Compose instalados em seu sistema antes
 ## Setup
 1. Clone este repositório para sua máquina local.
 ```shell
-git clone git@bitbucket.org:newway-ondemand/n8n.git
+git clone https://github.com/stdioh321/n8n-test.git
 ```
 2. Navegue até o diretório do projeto.
 ```shell
-cd n8n
+cd n8n-test
 ```
 3. Efetue build das imagens docker
 ```shell
