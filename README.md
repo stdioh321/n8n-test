@@ -31,6 +31,6 @@ Depois que os serviços estiverem funcionando, você poderá acessar a interface
 ```shell
 # Crie suas credenciais
 # exemplo
-user: test@test.com
-pass: Abc123@123
+user: n8n@n8n.com
+pass: Abc123@Abc123@
 ```
