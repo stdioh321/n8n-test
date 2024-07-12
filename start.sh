@@ -26,7 +26,7 @@ trap 'cleanup_and_exit' SIGINT
     docker build -f Dockerfile.base . -t n8n-base ;
 }
 
-$DOCKER_COMPOSE build --no-cache
+$DOCKER_COMPOSE build
 $DOCKER_COMPOSE up -d
 $DOCKER_COMPOSE logs -f
 
