@@ -9,6 +9,17 @@ else
     echo "Error: docker-compose or 'docker compose' not found."
     exit 1
 fi
+if [ ! -f "data.zip" ]; then
+    echo "Error: data.zip file not found."
+    exit 1
+fi
+
+if [ ! -d "data" ]; then
+    echo "Extracting data.zip..."
+    unzip data.zip -d data || { echo "Extraction failed."; exit 1; }
+else
+    echo "Folder 'data' already exists. Skipping extraction."
+fi
 
 function cleanup_and_exit() {
     echo "# Removendo containers"
