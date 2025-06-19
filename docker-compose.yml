@@ -39,7 +39,7 @@ services:
       # - N8N_HOST=localnet
       # - N8N_PORT=80
     volumes:
-      - ./data-temp:/data
+      - n8n_data:/data
     restart: unless-stopped
     depends_on:
       - n8n_postgres
@@ -93,7 +93,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-n8n}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-n8n}
     volumes:
-      - ./data/db/postgres:/var/lib/postgresql/data
+      - n8n_postgres:/var/lib/postgresql/data
     extra_hosts: *default_extra_hosts
   n8n_redis:
     container_name: n8n_redis
@@ -101,7 +101,7 @@ services:
     ports:
       - 6380:6379
     volumes:
-      - ./data/redis:/data
+      - n8n_redis:/data
     extra_hosts: *default_extra_hosts
   n8n_mongo:
     container_name: n8n_mongo
@@ -109,8 +109,7 @@ services:
     restart: unless-stopped
     hostname: n8n_mongo
     volumes:
-      - './data/db/mongo/data:/data'
-      - './data/db/mongo/db:/data/db'
+      - 'n8n_mongo:/data'
     ports:
       - '27020:27017'
     extra_hosts: *default_extra_hosts
@@ -120,3 +119,13 @@ services:
           memory: 2048M
         reservations:
           memory: 1048M
+
+volumes:
+  n8n_data:
+    driver: local
+  n8n_postgres:
+    driver: local
+  n8n_redis:
+    driver: local
+  n8n_mongo:
+    driver: local

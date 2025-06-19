@@ -37,8 +37,6 @@ bash start.sh
 
 Once the services are up and running, you can access the N8N web interface by visiting [http://localhost:5678](http://localhost:5678) in your web browser.
 
-> To start with a clean environment, delete the "./data" folder, which contains the database and Redis data.
-
 ```shell
 # Create your credentials
 # Example
