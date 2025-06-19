@@ -16,7 +16,7 @@ fi
 
 if [ ! -d "data" ]; then
     echo "Extracting data.zip..."
-    unzip data.zip -d data || { echo "Extraction failed."; exit 1; }
+    unzip data.zip || { echo "Extraction failed."; exit 1; }
 else
     echo "Folder 'data' already exists. Skipping extraction."
 fi
